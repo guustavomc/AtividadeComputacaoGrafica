@@ -1,9 +1,10 @@
 {
   "ExpandedNodes": [
     "",
+    "\\3D_Models",
     "\\Hello3D",
-    "\\Hello3D\\Exericio8"
+    "\\Hello3D\\AtividadeModulo1"
   ],
-  "SelectedNode": "\\Hello3D\\Hello3D.sln",
+  "SelectedNode": "\\Hello3D\\AtividadeModulo1\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }

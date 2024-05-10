@@ -77,7 +77,7 @@ int main()
 //#ifdef __APPLE__
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 //#endif
-
+	//
 	// Criação da janela GLFW
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Ola 3D -- Gustavo Conceicao", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
