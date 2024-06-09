@@ -39,12 +39,13 @@ const GLuint WIDTH = 1000, HEIGHT = 1000;
 const GLchar* vertexShaderSource = "#version 450\n"
 "layout (location = 0) in vec3 position;\n"
 "layout (location = 1) in vec3 color;\n"
+"layout (location = 2) in float offset;\n"
 "uniform mat4 model;\n"
 "out vec4 finalColor;\n"
 "void main()\n"
 "{\n"
 //...pode ter mais linhas de código aqui!
-"gl_Position = model * vec4(position, 1.0);\n"
+"gl_Position = model * vec4(position.x + offset, position.y + offset, position.z + offset, 1.0);\n"
 "finalColor = vec4(color, 1.0);\n"
 "}\0";
 
@@ -57,7 +58,8 @@ const GLchar* fragmentShaderSource = "#version 450\n"
 "color = finalColor;\n"
 "}\n\0";
 
-bool rotateX=false, rotateY=false, rotateZ=false;
+bool rotateX = false, rotateY = false, rotateZ = false, scaleUp = false;
+float scale = 1.0f, xTranslation = 0.0f, yTranslation = 0.0f, zTranslation = 0.0f;
 
 // Função MAIN
 int main()
@@ -77,9 +79,9 @@ int main()
 //#ifdef __APPLE__
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 //#endif
-	//
+
 	// Criação da janela GLFW
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Modulo 2 -- Gustavo Conceicao", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Cubo M2 - GabrielHoffmann", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Fazendo o registro da função de callback para a janela GLFW
@@ -98,10 +100,7 @@ int main()
 	cout << "Renderer: " << renderer << endl;
 	cout << "OpenGL version supported " << version << endl;
 
-	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
+
 
 
 	// Compilando e buildando o programa de shader
@@ -125,6 +124,11 @@ int main()
 	// Loop da aplicação - "game loop"
 	while (!glfwWindowShouldClose(window))
 	{
+		// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+
 		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
@@ -137,11 +141,11 @@ int main()
 
 		float angle = (GLfloat)glfwGetTime();
 
-		model = glm::mat4(1); 
+		model = glm::mat4(1);
 		if (rotateX)
 		{
 			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-			
+
 		}
 		else if (rotateY)
 		{
@@ -154,17 +158,23 @@ int main()
 
 		}
 
+		model = glm::scale(model, glm::vec3(scale, scale, scale));
+
+		model = glm::translate(model, glm::vec3(xTranslation, yTranslation, zTranslation));
+
+
+
 		glUniformMatrix4fv(modelLoc, 1, FALSE, glm::value_ptr(model));
 		// Chamada de desenho - drawcall
 		// Poligono Preenchido - GL_TRIANGLES
-		
+
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 18);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 2);
 
 		// Chamada de desenho - drawcall
 		// CONTORNO - GL_LINE_LOOP
-		
-		glDrawArrays(GL_POINTS, 0, 18);
+
+		glDrawArraysInstanced(GL_POINTS, 0, 36, 2);
 		glBindVertexArray(0);
 
 		// Troca os buffers da tela
@@ -187,7 +197,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_X && action == GLFW_PRESS)
 	{
-		rotateX = true;
+		rotateX = !rotateX;
 		rotateY = false;
 		rotateZ = false;
 	}
@@ -195,7 +205,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_Y && action == GLFW_PRESS)
 	{
 		rotateX = false;
-		rotateY = true;
+		rotateY = !rotateY;
 		rotateZ = false;
 	}
 
@@ -203,11 +213,40 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		rotateX = false;
 		rotateY = false;
-		rotateZ = true;
+		rotateZ = !rotateZ;
 	}
 
+	if (key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS) {
+		scale -= 0.2f;
+	}
 
+	if (key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS) {
+		scale += 0.2f;
+	}
 
+	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+		xTranslation -= 0.1f;
+	}
+
+	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+		xTranslation += 0.1f;
+	}
+
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+		zTranslation -= 0.1f;
+	}
+
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+		zTranslation += 0.1f;
+	}
+
+	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+		yTranslation -= 0.1f;
+	}
+
+	if (key == GLFW_KEY_I && action == GLFW_PRESS) {
+		yTranslation += 0.1f;
+	}
 }
 
 //Esta função está basntante hardcoded - objetivo é compilar e "buildar" um programa de
@@ -219,6 +258,7 @@ int setupShader()
 {
 	// Vertex shader
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 	// Checando erros de compilação (exibição via log no terminal)
@@ -273,44 +313,82 @@ int setupGeometry()
 
 		//Base da pirâmide: 2 triângulos
 		//x    y    z    r    g    b
+
+		// Amarelo
 		-0.5, -0.5, -0.5, 1.0, 1.0, 0.0,
-		-0.5, -0.5,  0.5, 0.0, 1.0, 1.0,
-		 0.5, -0.5, -0.5, 1.0, 0.0, 1.0,
+		-0.5, -0.5,  0.5, 1.0, 1.0, 0.0,
+		 0.5, -0.5, -0.5, 1.0, 1.0, 0.0,
 
 		 -0.5, -0.5, 0.5, 1.0, 1.0, 0.0,
-		  0.5, -0.5,  0.5, 0.0, 1.0, 1.0,
-		  0.5, -0.5, -0.5, 1.0, 0.0, 1.0,
-
-		 //
-		 -0.5, -0.5, -0.5, 1.0, 1.0, 0.0,
-		  0.0,  0.5,  0.0, 1.0, 1.0, 0.0,
+		  0.5, -0.5,  0.5, 1.0, 1.0, 0.0,
 		  0.5, -0.5, -0.5, 1.0, 1.0, 0.0,
 
-		  -0.5, -0.5, -0.5, 1.0, 0.0, 1.0,
-		  0.0,  0.5,  0.0, 1.0, 0.0, 1.0,
-		  -0.5, -0.5, 0.5, 1.0, 0.0, 1.0,
+		  // Rosa
+		  -0.5, 0.5, -0.5, 1.0, 0.0, 1.0,
+		-0.5, 0.5,  0.5, 1.0, 0.0, 1.0,
+		 0.5, 0.5, -0.5, 1.0, 0.0, 1.0,
 
-		   -0.5, -0.5, 0.5, 1.0, 1.0, 0.0,
-		  0.0,  0.5,  0.0, 1.0, 1.0, 0.0,
-		  0.5, -0.5, 0.5, 1.0, 1.0, 0.0,
-
-		   0.5, -0.5, 0.5, 0.0, 1.0, 1.0,
-		  0.0,  0.5,  0.0, 0.0, 1.0, 1.0,
-		  0.5, -0.5, -0.5, 0.0, 1.0, 1.0,
+		 -0.5, 0.5, 0.5, 1.0, 0.0, 1.0,
+		  0.5, 0.5,  0.5, 1.0, 0.0, 1.0,
+		  0.5, 0.5, -0.5, 1.0, 0.0, 1.0,
 
 
+		  // Preto
+		-0.5, 0.5, -0.5, 0.0, 0.0, 0.0,
+		-0.5, -0.5,  -0.5, 0.0, 0.0, 0.0,
+		 0.5, -0.5, -0.5, 0.0, 0.0, 0.0,
+
+		 -0.5, 0.5, -0.5, 0.0, 0.0, 0.0,
+		0.5, 0.5,  -0.5, 0.0, 0.0, 0.0,
+		 0.5, -0.5, -0.5, 0.0, 0.0, 0.0,
+
+		 // Vermelho
+		 -0.5, 0.5, 0.5, 1.0, 0.0, 0.0,
+		-0.5, -0.5,  0.5, 1.0, 0.0, 0.0,
+		 0.5, -0.5, 0.5, 1.0, 0.0, 0.0,
+
+		 -0.5, 0.5, 0.5, 1.0, 0.0, 0.0,
+		0.5, 0.5,  0.5, 1.0, 0.0, 0.0,
+		 0.5, -0.5, 0.5, 1.0, 0.0, 0.0,
+
+
+		 // Verde
+		 -0.5, 0.5, 0.5, 0.0, 1.0, 0.0,
+		-0.5, -0.5,  0.5, 0.0, 1.0, 0.0,
+		 -0.5, -0.5, -0.5, 0.0, 1.0, 0.0,
+
+		 -0.5, 0.5, 0.5, 0.0, 1.0, 0.0,
+		-0.5, -0.5,  -0.5, 0.0, 1.0, 0.0,
+		 -0.5, 0.5, -0.5, 0.0, 1.0, 0.0,
+
+		 // Azul
+		0.5, 0.5, 0.5, 0.0, 1.0, 1.0,
+		0.5, -0.5,  0.5, 0.0, 1.0, 1.0,
+		 0.5, -0.5, -0.5, 0.0, 1.0, 1.0,
+
+		 0.5, 0.5, 0.5, 0.0, 1.0, 1.0,
+		0.5, -0.5,  -0.5, 0.0, 1.0, 1.0,
+		 0.5, 0.5, -0.5, 0.0, 1.0, 1.0,
 	};
 
-	GLuint VBO, VAO;
+	GLuint VBO, VAO, VBOInstance;
 
 	//Geração do identificador do VBO
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBOInstance);
+
 
 	//Faz a conexão (vincula) do buffer como um buffer de array
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+
 	//Envia os dados do array de floats para o buffer da OpenGl
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBOInstance);
+
+	GLfloat offsets[] = { 0.0f, 1.1f };
+	glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
 
 	//Geração do identificador do VAO (Vertex Array Object)
 	glGenVertexArrays(1, &VAO);
@@ -318,7 +396,7 @@ int setupGeometry()
 	// Vincula (bind) o VAO primeiro, e em seguida  conecta e seta o(s) buffer(s) de vértices
 	// e os ponteiros para os atributos 
 	glBindVertexArray(VAO);
-	
+
 	//Para cada atributo do vertice, criamos um "AttribPointer" (ponteiro para o atributo), indicando: 
 	// Localização no shader * (a localização dos atributos devem ser correspondentes no layout especificado no vertex shader)
 	// Numero de valores que o atributo tem (por ex, 3 coordenadas xyz) 
@@ -326,14 +404,22 @@ int setupGeometry()
 	// Se está normalizado (entre zero e um)
 	// Tamanho em bytes 
 	// Deslocamento a partir do byte zero 
-	
+
 	//Atributo posição (x, y, z)
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	//Atributo cor (r, g, b)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
+
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBOInstance);
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribDivisor(2, 1);
+	glEnableVertexAttribArray(2);
 
 
 
@@ -344,6 +430,7 @@ int setupGeometry()
 	// Desvincula o VAO (é uma boa prática desvincular qualquer buffer ou array para evitar bugs medonhos)
 	glBindVertexArray(0);
 
+
+
 	return VAO;
 }
-
