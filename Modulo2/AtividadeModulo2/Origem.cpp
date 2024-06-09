@@ -81,7 +81,7 @@ int main()
 //#endif
 
 	// Criação da janela GLFW
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Cubo M2 - GabrielHoffmann", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "M2 - Gustavo Conceicao", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Fazendo o registro da função de callback para a janela GLFW
@@ -387,7 +387,7 @@ int setupGeometry()
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBOInstance);
 
-	GLfloat offsets[] = { 0.0f, 1.1f };
+	GLfloat offsets[] = { 0.0f, 1.0f };
 	glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
 
 	//Geração do identificador do VAO (Vertex Array Object)
