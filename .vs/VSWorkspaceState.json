@@ -1,15 +1,15 @@
 {
   "ExpandedNodes": [
     "",
+    "\\3D_Models",
     "\\3D_Models\\Cube",
     "\\3D_Models\\Naves",
     "\\3D_Models\\Suzanne",
-    "\\Modulo1_Hello3D\\AtividadeModulo1",
     "\\Modulo2",
     "\\Modulo2\\AtividadeModulo2",
     "\\Modulo3",
     "\\Modulo3\\AtividadeModulo3"
   ],
-  "SelectedNode": "\\Modulo3\\AtividadeModulo3\\RESULT.png",
+  "SelectedNode": "\\Modulo3\\AtividadeModulo3\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }
