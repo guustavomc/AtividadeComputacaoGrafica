@@ -1,14 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\3D_Models",
-    "\\3D_Models\\Cube",
-    "\\dependencies",
-    "\\Modulo2",
-    "\\Modulo2\\AtividadeModulo2",
-    "\\Modulo3",
-    "\\Modulo3\\AtividadeModulo3"
+    "\\M3 - Texturas",
+    "\\M3 - Texturas\\HelloTextures"
   ],
-  "SelectedNode": "\\Modulo3\\AtividadeModulo3\\Origem.cpp",
+  "SelectedNode": "\\M3 - Texturas",
   "PreviewInSolutionExplorer": false
 }
