@@ -44,7 +44,7 @@ float scale = 200.0f, xTranslation = 0.0f, yTranslation = 0.0f, zTranslation = 0
 int main()
 {
 	glfwInit();
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Modulo 3 - Adicionando Texturas", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Atividade Vivencial 1", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
