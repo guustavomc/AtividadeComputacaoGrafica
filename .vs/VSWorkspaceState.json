@@ -1,9 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\M3 - Texturas",
-    "\\M3 - Texturas\\HelloTextures"
+    "\\Modulo3",
+    "\\Modulo3\\HelloTextures"
   ],
-  "SelectedNode": "\\M3 - Texturas",
+  "SelectedNode": "\\Modulo3\\HelloTextures\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }
