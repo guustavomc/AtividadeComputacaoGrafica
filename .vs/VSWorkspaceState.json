@@ -1,16 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\3D_Models",
-    "\\3D_Models\\Cube",
-    "\\3D_Models\\Planetas",
     "\\EntregaVivencial1",
     "\\EntregaVivencial1\\HelloTextures",
-    "\\EntregaVivencial1\\objects",
-    "\\EntregaVivencial1\\shaders",
-    "\\EntregaVivencial1\\textures",
-    "\\Modulo3\\HelloTextures"
+    "\\Modulo3",
+    "\\Modulo3\\textures",
+    "\\Modulo4",
+    "\\Modulo4\\HelloTextures",
+    "\\Modulo4\\objects",
+    "\\Modulo4\\shaders",
+    "\\Modulo4\\textures"
   ],
-  "SelectedNode": "\\3D_Models\\Cube\\cube.obj",
+  "SelectedNode": "\\EntregaVivencial1\\HelloTextures\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }
