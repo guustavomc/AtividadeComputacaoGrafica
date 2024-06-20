@@ -1,12 +1,4 @@
-/* Hello Triangle - código adaptado de https://learnopengl.com/#!Getting-started/Hello-Triangle
- *
- * Adaptado por Rossana Baptista Queiroz
- * para a disciplina de Processamento Gráfico - Jogos Digitais - Unisinos
- * Versão inicial: 7/4/2017
- * Última atualização em 11/04/2022
- *
- */
- /**/
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -36,15 +28,18 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 bool rotateX = false, rotateY = false, rotateZ = false;
 vector<GLfloat> positions;
 vector<GLfloat> textureCoords;
+vector<GLfloat> normals;
+vector<GLfloat> ka;
+vector<GLfloat> ks;
+float ns;
 string mtlFilePath = "";
 string textureFilePath = "";
-float scale = 200.0f, xTranslation = 0.0f, yTranslation = 0.0f, zTranslation = 0.0f;
-
+glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 3.0);
 
 int main()
 {
 	glfwInit();
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Modulo 4", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Suzanne - Adicionando Iluminação", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, key_callback);
@@ -75,6 +70,18 @@ int main()
 	GLint projLoc = glGetUniformLocation(shader.ID, "projection");
 	glUniformMatrix4fv(projLoc, 1, false, glm::value_ptr(projection));
 
+	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	GLint viewLoc = glGetUniformLocation(shader.ID, "view");
+	glUniformMatrix4fv(viewLoc, 1, FALSE, glm::value_ptr(view));
+
+	shader.setVec3("ka", ka[0], ka[1], ka[2]);
+	shader.setFloat("kd", 0.5);
+	shader.setVec3("ks", ks[0], ks[1], ks[2]);
+	shader.setFloat("q", ns);
+
+	shader.setVec3("lightPos", -2.0f, 100.0f, 2.0f);
+	shader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -90,7 +97,7 @@ int main()
 		glPointSize(20);
 
 		glm::mat4 model = glm::mat4(1);
-		float angle = (GLfloat)glfwGetTime();
+		float angle = (GLfloat)glfwGetTime() / 10;
 
 		model = glm::translate(model, glm::vec3(400.0, 300.0, 100));
 		if (rotateX)
@@ -105,12 +112,12 @@ int main()
 		{
 			model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
 		}
-		model = glm::scale(model, glm::vec3(scale, scale, scale));
-
-		model = glm::translate(model, glm::vec3(xTranslation, yTranslation, zTranslation));
-
+		model = glm::scale(model, glm::vec3(200.0, 200.0, 200.0));
 		GLint modelLoc = glGetUniformLocation(shader.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, false, glm::value_ptr(model));
+
+		glUniformMatrix4fv(viewLoc, 1, FALSE, glm::value_ptr(view));
+		shader.setVec3("cameraPos", cameraPos.x, cameraPos.y, cameraPos.z);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
@@ -156,37 +163,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		rotateY = false;
 		rotateZ = true;
 	}
-	if (key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS) {
-		scale -= 10;
-	}
-
-	if (key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS) {
-		scale += 10;
-	}
-
-	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		xTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		xTranslation += 0.1f;
-	}
-
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		zTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		zTranslation += 0.1f;
-	}
-
-	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
-		yTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_I && action == GLFW_PRESS) {
-		yTranslation += 0.1f;
-	}
 }
 
 void loadMTL(string path)
@@ -204,13 +180,33 @@ void loadMTL(string path)
 		{
 			iss >> readValue >> textureFilePath;
 		}
+		else if (line.find("Ka") == 0)
+		{
+			float ka1, ka2, ka3;
+			iss >> readValue >> ka1 >> ka2 >> ka3;
+			ka.push_back(ka1);
+			ka.push_back(ka2);
+			ka.push_back(ka3);
+		}
+		else if (line.find("Ks") == 0)
+		{
+			float ks1, ks2, ks3;
+			iss >> readValue >> ks1 >> ks2 >> ks3;
+			ks.push_back(ks1);
+			ks.push_back(ks2);
+			ks.push_back(ks3);
+		}
+		else if (line.find("Ns") == 0)
+		{
+			iss >> readValue >> ns;
+		}
 	}
 	mtlFile.close();
 }
 
 int setupSprite()
 {
-	GLuint VAO, VBO[2];
+	GLuint VAO, VBO[3];
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(2, VBO);
@@ -227,6 +223,11 @@ int setupSprite()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), normals.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -239,6 +240,7 @@ void loadOBJ(string path)
 {
 	vector<glm::vec3> vertexIndices;
 	vector<glm::vec2> textureIndices;
+	vector<glm::vec3> normalIndices;
 
 	ifstream file(path);
 	if (!file.is_open())
@@ -270,29 +272,42 @@ void loadOBJ(string path)
 			iss >> u >> v;
 			textureIndices.push_back(glm::vec2(u, v));
 		}
+		else if (prefix == "vn")
+		{
+			float x, y, z;
+			iss >> x >> y >> z;
+			normalIndices.push_back(glm::vec3(x, y, z));
+		}
 		else if (prefix == "f")
 		{
 			string v1, v2, v3;
 			iss >> v1 >> v2 >> v3;
 
-			glm::ivec3 vIndices, tIndices;
+			glm::ivec3 vIndices, tIndices, nIndices;
 			istringstream(v1.substr(0, v1.find('/'))) >> vIndices.x;
-			istringstream(v1.substr(v1.find('/') + 1)) >> tIndices.x;
+			istringstream(v1.substr(v1.find('/') + 1, v1.rfind('/') - v1.find('/') - 1)) >> tIndices.x;
+			istringstream(v1.substr(v1.rfind('/') + 1)) >> nIndices.x;
 			istringstream(v2.substr(0, v2.find('/'))) >> vIndices.y;
-			istringstream(v2.substr(v2.find('/') + 1)) >> tIndices.y;
+			istringstream(v2.substr(v2.find('/') + 1, v2.rfind('/') - v2.find('/') - 1)) >> tIndices.y;
+			istringstream(v2.substr(v2.rfind('/') + 1)) >> nIndices.y;
 			istringstream(v3.substr(0, v3.find('/'))) >> vIndices.z;
-			istringstream(v3.substr(v3.find('/') + 1)) >> tIndices.z;
+			istringstream(v3.substr(v3.find('/') + 1, v3.rfind('/') - v3.find('/') - 1)) >> tIndices.z;
+			istringstream(v3.substr(v3.rfind('/') + 1)) >> nIndices.z;
 
 			for (int i = 0; i < 3; i++)
 			{
 				const glm::vec3& vertex = vertexIndices[vIndices[i] - 1];
 				const glm::vec2& texture = textureIndices[tIndices[i] - 1];
+				const glm::vec3& normal = normalIndices[nIndices[i] - 1];
 
 				positions.push_back(vertex.x);
 				positions.push_back(vertex.y);
 				positions.push_back(vertex.z);
 				textureCoords.push_back(texture.x);
 				textureCoords.push_back(texture.y);
+				normals.push_back(normal.x);
+				normals.push_back(normal.y);
+				normals.push_back(normal.z);
 			}
 		}
 	}
