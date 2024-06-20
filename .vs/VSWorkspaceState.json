@@ -1,13 +1,14 @@
 {
   "ExpandedNodes": [
     "",
+    "\\Common",
+    "\\dependencies",
     "\\EntregaVivencial1",
     "\\EntregaVivencial1\\HelloTextures",
+    "\\EntregaVivencial1\\objects",
     "\\EntregaVivencial1\\shaders",
+    "\\EntregaVivencial1\\textures",
     "\\Modulo4",
-    "\\Modulo4\\HelloTextures",
-    "\\Modulo4\\objects",
-    "\\Modulo4\\shaders",
     "\\Modulo4\\textures"
   ],
   "SelectedNode": "\\Modulo4\\HelloTextures\\Origem.cpp",
