@@ -8,19 +8,11 @@ class SceneObject
 public:
 	SceneObject(GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId, glm::vec3 position = glm::vec3(0.0, 0.0, 0.0), glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0),
 		float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0), float translationSpeed = 0.05)
-	{
-		this->vertexArrayObject = vertexArrayObject;
-		this->numVertices = numVertices;
-		this->shader = shader;
-		this->position = position;
-		this->scale = scale;
-		this->rotationAngle = rotationAngle;
-		this->rotationAxis = rotationAxis;
-		this->translationSpeed = translationSpeed;
-		this->textureId = textureId;
-	}
+		: vertexArrayObject(vertexArrayObject), numVertices(numVertices), shader(shader), position(position), scale(scale),
+		rotationAngle(rotationAngle), rotationAxis(rotationAxis), translationSpeed(translationSpeed), textureId(textureId)
+	{}
 
-	void setScale(const glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0))
+	void updateScale(const glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0))
 	{
 		this->scale = scale;
 	}

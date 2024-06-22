@@ -16,6 +16,7 @@ using namespace std;
 #include "../Common/include/stb_image.h"
 #include "../Common/include/Shader.h"
 #include "SceneObject.cpp"
+#include "Camera.cpp"
 
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
@@ -29,6 +30,8 @@ int translateDirection = 0;
 
 // Variável de controle de escala
 float scale = 1.0;
+
+Camera* gCamera = nullptr;
 
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
@@ -64,7 +67,7 @@ void adjustRotation(int key)
 	default:
 		break;
 	}
-
+	
 }
 
 // Ajusta a translação com base na tecla pressionada.
@@ -96,13 +99,13 @@ void adjustTranslation(int key)
 		translateZ = false;
 		translateDirection = -1;
 		break;
-	case(GLFW_KEY_W):
+	case(GLFW_KEY_I):
 		translateX = false;
 		translateY = false;
 		translateZ = true;
 		translateDirection = 1;
 		break;
-	case(GLFW_KEY_S):
+	case(GLFW_KEY_K):
 		translateX = false;
 		translateY = false;
 		translateZ = true;
@@ -122,6 +125,21 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	adjustScale(key);
 	adjustRotation(key);
 	adjustTranslation(key);
+
+	if (gCamera)
+		gCamera->moveCamera(key);
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gCamera)
+		gCamera->updateCameraDirection(xpos, ypos);
+}
+
+void scrollCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gCamera)
+		gCamera->scrollCamera(ypos);
 }
 
 // Reseta variáveis de controle de translação
@@ -179,7 +197,7 @@ bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std:
 		if (word == "mtllib") {
 			ssline >> materialFileName;
 		}
-		else if (word == "usemtl") {
+		else if (word == "usemtl") { 
 			ssline >> materialName;
 		}
 		else if (word == "v") {
@@ -367,15 +385,14 @@ string loadSimpleMTL(const std::string& filepath, string materialName)
 	{
 		istringstream ssline(line);
 		string word;
-		ssline >> word;
-
+		ssline >> word; 
+		
 		if (word == "newmtl")
 		{
 			string currentMaterialName;
 			ssline >> currentMaterialName;
 			materialFound = (currentMaterialName == materialName);
-		}
-		else if (word == "map_Kd" && materialFound) {
+		} else if (word == "map_Kd" && materialFound) { 
 			ssline >> textureFileName;
 			break;
 		}
@@ -391,11 +408,14 @@ int main()
 	glfwInit();
 
 	// Criação da janela GLFW
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Modulo 4", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Vivencial 2", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -418,13 +438,21 @@ int main()
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
-	//Matriz de view
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	shader.setMat4("view", value_ptr(view));
+	Camera camera(&shader, width, height);
+	gCamera = &camera;
 
-	//Matriz de projeção perspectiva - definindo o volume de visualização (frustum)
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-	shader.setMat4("projection", glm::value_ptr(projection));
+		// Iluminação: Coeficiente de material para a luz ambiente
+	shader.setFloat("ka", 0.2);
+	// Iluminação: Coeficiente de material para a luz difusa
+	shader.setFloat("kd", 0.5);
+	// Iluminação: Coeficiente de material para a luz especular
+	shader.setFloat("ks", 0.5);
+	// Iluminação: Expoente de brilho do material
+	shader.setFloat("q", 10.0);
+	// Iluminação: Define a posição da fonte de luz
+	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
+	// Iluminação: Define a cor da luz
+	shader.setVec3("light_color", 1.0, 1.0, 1.0);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -443,19 +471,6 @@ int main()
 	int numObjetcts = 7;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
 
-	//Atualizando o shader com a posição da câmera
-	shader.setVec3("camera_pos", 0.0, 0.0, 3.0);
-
-	//Definindo as propriedades do material da superficie
-	shader.setFloat("ka", 0.2);
-	shader.setFloat("kd", 0.5);
-	shader.setFloat("ks", 0.5);
-	shader.setFloat("q", 10.0);
-
-	//Definindo a fonte de luz pontual
-	shader.setVec3("light_pos", 0.0, 10.0, 0.0);
-	shader.setVec3("light_color", 1.0, 1.0, 0.8);
-
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
@@ -470,6 +485,8 @@ int main()
 
 		glLineWidth(10);
 		glPointSize(20);
+
+		gCamera->updateCamera();
 
 		for (int i = 0; i < sceneObjects.size(); ++i)
 		{
@@ -487,11 +504,11 @@ int main()
 			else if (translateZ)
 				sceneObjects[i].translateZ(translateDirection);
 
-			sceneObjects[i].setScale(glm::vec3(scale, scale, scale));
+			sceneObjects[i].updateScale(glm::vec3(scale, scale, scale));
 			sceneObjects[i].updateModelMatrix();
 			sceneObjects[i].renderObject();
 		}
-
+		
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
