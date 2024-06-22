@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\dependencies\glfw-3.4.bin.WIN64\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\dependencies\GLAD\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\dependencies\glfw-3.4.bin.WIN64\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\GLAD\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
