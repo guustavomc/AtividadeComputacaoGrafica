@@ -18,22 +18,17 @@ using namespace std;
 #include "SceneObject.cpp"
 #include "Camera.cpp"
 
-// Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
 
-// Variáveis de controle de rotação
 bool rotateX = false, rotateY = false, rotateZ = false;
 
-// Variáveis de controle de translação
 bool translateX = false, translateY = false, translateZ = false;
 int translateDirection = 0;
 
-// Variável de controle de escala
 float scale = 1.0;
 
 Camera* gCamera = nullptr;
 
-// Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
 {
 	float scaleFactor = 0.05;
@@ -44,7 +39,6 @@ void adjustScale(int key)
 		scale -= scale * scaleFactor;
 }
 
-// Ajusta a rotação com base na tecla pressionada.
 void adjustRotation(int key)
 {
 	switch (key)
@@ -70,7 +64,6 @@ void adjustRotation(int key)
 	
 }
 
-// Ajusta a translação com base na tecla pressionada.
 void adjustTranslation(int key)
 {
 	switch (key)
@@ -116,7 +109,6 @@ void adjustTranslation(int key)
 	}
 }
 
-// Função callback acionada quando há interação com o teclado
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -142,7 +134,6 @@ void scrollCallback(GLFWwindow* window, double xpos, double ypos)
 		gCamera->scrollCamera(ypos);
 }
 
-// Reseta variáveis de controle de translação
 void resetTranslationVariables() {
 	translateX = false;
 	translateY = false;
@@ -150,7 +141,6 @@ void resetTranslationVariables() {
 	translateDirection = 0;
 }
 
-// Cria e retorna um vetor de objetos da cena, representando cubos, distribuídos horizontalmente, com base no número fornecido (numObjects)
 std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId) {
 	std::vector<SceneObject> objects;
 
@@ -171,7 +161,6 @@ std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArray
 	return objects;
 }
 
-// Função para ler o arquivo OBJ e extrair os dados de vértices e índices
 bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
 	string& materialFileName, string& materialName) {
 
@@ -181,7 +170,6 @@ bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std:
 	vector <glm::vec3> vertices;
 	vector <glm::vec3> normals;
 
-	// Abrindo o arquivo OBJ
 	std::ifstream inputFile(filepath);
 	if (!inputFile.is_open()) {
 		std::cerr << "Erro ao abrir o arquivo OBJ: " << filepath << std::endl;
@@ -239,17 +227,14 @@ bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std:
 				vbuffer.push_back(color.g);
 				vbuffer.push_back(color.b);
 
-				// Movendo para a próxima parte da string para obter o índice da textura
 				tokens[i] = tokens[i].substr(pos + 1);
 				pos = tokens[i].find("/");
 				token = tokens[i].substr(0, pos);
-				index = atoi(token.c_str()) - 1; // Convertendo o índice para inteiro e ajustando para começar de 0
+				index = atoi(token.c_str()) - 1; 
 
-				// Adicionando as coordenadas da textura ao buffer de vértices
 				vbuffer.push_back(textureCoordinates[index].s);
 				vbuffer.push_back(textureCoordinates[index].t);
 
-				//Recuperando os indices de vns
 				tokens[i] = tokens[i].substr(pos + 1);
 				index = atoi(tokens[i].c_str()) - 1;
 
@@ -264,7 +249,6 @@ bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std:
 	return true;
 }
 
-// Função para inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
 bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbuffer, int stride) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -273,7 +257,6 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	// Especificando os atributos do vértice
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
@@ -292,7 +275,6 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 	return true;
 }
 
-// Função principal para carregar um arquivo OBJ e inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
 int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materialFileName, string& materialName) {
 	std::vector<GLuint> indices;
 	std::vector<GLfloat> vbuffer;
@@ -314,22 +296,18 @@ int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materia
 	return VAO;
 }
 
-// Carrega uma textura a partir de um arquivo, configura seus parâmetros e retorna o ID da textura
 int loadTexture(string filepath)
 {
 	GLuint texID;
 
-	// Gera o identificador da textura na memória 
 	glGenTextures(1, &texID);
 	glBindTexture(GL_TEXTURE_2D, texID);
 
-	//Ajusta os parâmetros de wrapping e filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//Carregamento da imagem
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
 
@@ -367,7 +345,6 @@ int loadTexture(string filepath)
 	return texID;
 }
 
-// Carrega um arquivo MTL simples, extrai o nome do arquivo de textura e o armazena na variável textureFileName
 string loadSimpleMTL(const std::string& filepath, string materialName)
 {
 	string textureFileName;
@@ -404,37 +381,30 @@ string loadSimpleMTL(const std::string& filepath, string materialName)
 
 int main()
 {
-	// Inicialização da GLFW
 	glfwInit();
 
-	// Criação da janela GLFW
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Vivencial 2", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
-	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 
-	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Falha ao inicializar o GLAD" << std::endl;
 	}
 
-	// Obtendo as informações de versão
-	const GLubyte* renderer = glGetString(GL_RENDERER); /* get renderer string */
-	const GLubyte* version = glGetString(GL_VERSION); /* version as a string */
+	const GLubyte* renderer = glGetString(GL_RENDERER); 
+	const GLubyte* version = glGetString(GL_VERSION); 
 	cout << "Renderizador: " << renderer << endl;
 	cout << "Versão OpenGL suportada" << version << endl;
 
-	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
-	// Compilando e buildando o programa de shader
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
@@ -459,28 +429,22 @@ int main()
 	int numVertices;
 	string materialFileName;
 	string materialName;
-	//GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
 	GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
 
-	// Carregamento do arquivo MTL para obter as informações do material
 	string textureFileName = loadSimpleMTL(materialFileName, materialName);
 
-	//Carregando uma textura e armazenando o identificador na memória
 	GLuint textureId = loadTexture(textureFileName);
 
 	int numObjetcts = 5;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
 
-	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
 		resetTranslationVariables();
 
-		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
-		// Limpa o buffer de cor
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //cor de fundo
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLineWidth(10);
@@ -509,12 +473,9 @@ int main()
 			sceneObjects[i].renderObject();
 		}
 		
-		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
-	// Pede pra OpenGL desalocar os buffers
 	glDeleteVertexArrays(1, &VAO);
-	// Finaliza a execução da GLFW, limpando os recursos alocados por ela
 	glfwTerminate();
 	return 0;
 }
