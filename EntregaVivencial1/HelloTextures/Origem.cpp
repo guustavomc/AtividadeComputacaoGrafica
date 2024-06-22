@@ -1,338 +1,521 @@
-/* Hello Triangle - código adaptado de https://learnopengl.com/#!Getting-started/Hello-Triangle
- *
- * Adaptado por Rossana Baptista Queiroz
- * para a disciplina de Processamento Gráfico - Jogos Digitais - Unisinos
- * Versão inicial: 7/4/2017
- * Última atualização em 11/04/2022
- *
- */
-/**/
 #include <iostream>
 #include <string>
+#include <assert.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <cstdio>
+
 using namespace std;
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp> 
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "stb_image.h"
-#include "Shader.h"
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void loadOBJ(string path);
-void loadMTL(string path);
-int setupSprite();
-int loadTexture(string path);
+#include "../Common/include/stb_image.h"
+#include "../Common/include/Shader.h"
+#include "SceneObject.cpp"
+#include "Camera.cpp"
 
-const GLuint WIDTH = 800, HEIGHT = 600;
+// Dimensões da janela
+const GLuint WIDTH = 1000, HEIGHT = 1000;
+
+// Variáveis de controle de rotação
 bool rotateX = false, rotateY = false, rotateZ = false;
-vector<GLfloat> positions;
-vector<GLfloat> textureCoords;
-string mtlFilePath = "";
-string textureFilePath = "";
-float scale = 200.0f, xTranslation = 0.0f, yTranslation = 0.0f, zTranslation = 0.0f;
 
+// Variáveis de controle de translação
+bool translateX = false, translateY = false, translateZ = false;
+int translateDirection = 0;
 
-int main()
+// Variável de controle de escala
+float scale = 1.0;
+
+Camera* gCamera = nullptr;
+
+// Ajusta a escala com base na tecla pressionada.
+void adjustScale(int key)
 {
-	glfwInit();
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Atividade Vivencial 1", nullptr, nullptr);
-	glfwMakeContextCurrent(window);
+	float scaleFactor = 0.05;
 
-	glfwSetKeyCallback(window, key_callback);
+	if (key == GLFW_KEY_KP_ADD)
+		scale += scale * scaleFactor;
+	else if (key == GLFW_KEY_KP_SUBTRACT)
+		scale -= scale * scaleFactor;
+}
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+// Ajusta a rotação com base na tecla pressionada.
+void adjustRotation(int key)
+{
+	switch (key)
 	{
-		cout << "Failed to initialize GLAD" << endl;
+	case(GLFW_KEY_X):
+		rotateX = true;
+		rotateY = false;
+		rotateZ = false;
+		break;
+	case(GLFW_KEY_Y):
+		rotateX = false;
+		rotateY = true;
+		rotateZ = false;
+		break;
+	case(GLFW_KEY_Z):
+		rotateX = false;
+		rotateY = false;
+		rotateZ = true;
+		break;
+	default:
+		break;
+	}
+
+}
+
+// Ajusta a translação com base na tecla pressionada.
+void adjustTranslation(int key)
+{
+	switch (key)
+	{
+	case(GLFW_KEY_RIGHT):
+		translateX = true;
+		translateY = false;
+		translateZ = false;
+		translateDirection = 1;
+		break;
+	case(GLFW_KEY_LEFT):
+		translateX = true;
+		translateY = false;
+		translateZ = false;
+		translateDirection = -1;
+		break;
+	case(GLFW_KEY_UP):
+		translateX = false;
+		translateY = true;
+		translateZ = false;
+		translateDirection = 1;
+		break;
+	case(GLFW_KEY_DOWN):
+		translateX = false;
+		translateY = true;
+		translateZ = false;
+		translateDirection = -1;
+		break;
+	case(GLFW_KEY_I):
+		translateX = false;
+		translateY = false;
+		translateZ = true;
+		translateDirection = 1;
+		break;
+	case(GLFW_KEY_K):
+		translateX = false;
+		translateY = false;
+		translateZ = true;
+		translateDirection = -1;
+		break;
+	default:
+		break;
+	}
+}
+
+// Função callback acionada quando há interação com o teclado
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	adjustScale(key);
+	adjustRotation(key);
+	adjustTranslation(key);
+
+	if (gCamera)
+		gCamera->moveCamera(key);
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gCamera)
+		gCamera->updateCameraDirection(xpos, ypos);
+}
+
+void scrollCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gCamera)
+		gCamera->scrollCamera(ypos);
+}
+
+// Reseta variáveis de controle de translação
+void resetTranslationVariables() {
+	translateX = false;
+	translateY = false;
+	translateZ = false;
+	translateDirection = 0;
+}
+
+// Cria e retorna um vetor de objetos da cena, representando cubos, distribuídos horizontalmente, com base no número fornecido (numObjects)
+std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId) {
+	std::vector<SceneObject> objects;
+
+	const float horizontalSpacing = 2.75f;
+
+	for (int i = 0; i < numObjects; ++i)
+	{
+		float xPosition = 0.0f;
+
+		if (i % 2 == 0)
+			xPosition = (-horizontalSpacing) * (i / 2);
+		else
+			xPosition = (horizontalSpacing) * ((i / 2) + 1);
+
+		objects.push_back(SceneObject(vertexArrayObject, numVertices, shader, textureId, glm::vec3(xPosition, 0.0, 0.0)));
+	}
+
+	return objects;
+}
+
+// Função para ler o arquivo OBJ e extrair os dados de vértices e índices
+bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
+	string& materialFileName, string& materialName) {
+
+	glm::vec3 color = glm::vec3(1.0, 0.0, 1.0);
+
+	vector <glm::vec2> textureCoordinates;
+	vector <glm::vec3> vertices;
+	vector <glm::vec3> normals;
+
+	// Abrindo o arquivo OBJ
+	std::ifstream inputFile(filepath);
+	if (!inputFile.is_open()) {
+		std::cerr << "Erro ao abrir o arquivo OBJ: " << filepath << std::endl;
+		return false;
+	}
+
+	std::string line;
+	while (std::getline(inputFile, line)) {
+		std::istringstream ssline(line);
+		std::string word;
+		ssline >> word;
+
+		if (word == "mtllib") {
+			ssline >> materialFileName;
+		}
+		else if (word == "usemtl") {
+			ssline >> materialName;
+		}
+		else if (word == "v") {
+			glm::vec3 v;
+			ssline >> v.x >> v.y >> v.z;
+			vertices.push_back(v);
+		}
+		else if (word == "vt")
+		{
+			glm::vec2 vt;
+			ssline >> vt.s >> vt.t;
+			textureCoordinates.push_back(vt);
+		}
+		else if (word == "vn")
+		{
+			glm::vec3 vn;
+			ssline >> vn.x >> vn.y >> vn.z;
+			normals.push_back(vn);
+		}
+		else if (word == "f") {
+			std::string tokens[3];
+			ssline >> tokens[0] >> tokens[1] >> tokens[2];
+
+			for (int i = 0; i < 3; ++i) {
+				int posLastValue = tokens[i].find_last_of('/');
+				std::string lastValue = tokens[i].substr(posLastValue + 1);
+				int normal = std::stoi(lastValue);
+
+				int pos = tokens[i].find("/");
+				std::string token = tokens[i].substr(0, pos);
+				int index = std::atoi(token.c_str()) - 1;
+				indices.push_back(index);
+
+				vbuffer.push_back(vertices[index].x);
+				vbuffer.push_back(vertices[index].y);
+				vbuffer.push_back(vertices[index].z);
+
+				vbuffer.push_back(color.r);
+				vbuffer.push_back(color.g);
+				vbuffer.push_back(color.b);
+
+				// Movendo para a próxima parte da string para obter o índice da textura
+				tokens[i] = tokens[i].substr(pos + 1);
+				pos = tokens[i].find("/");
+				token = tokens[i].substr(0, pos);
+				index = atoi(token.c_str()) - 1; // Convertendo o índice para inteiro e ajustando para começar de 0
+
+				// Adicionando as coordenadas da textura ao buffer de vértices
+				vbuffer.push_back(textureCoordinates[index].s);
+				vbuffer.push_back(textureCoordinates[index].t);
+
+				//Recuperando os indices de vns
+				tokens[i] = tokens[i].substr(pos + 1);
+				index = atoi(tokens[i].c_str()) - 1;
+
+				vbuffer.push_back(normals[index].x);
+				vbuffer.push_back(normals[index].y);
+				vbuffer.push_back(normals[index].z);
+			}
+		}
+	}
+
+	inputFile.close();
+	return true;
+}
+
+// Função para inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
+bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbuffer, int stride) {
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vbuffer.size() * sizeof(GLfloat), vbuffer.data(), GL_STATIC_DRAW);
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	// Especificando os atributos do vértice
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(3);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	return true;
+}
+
+// Função principal para carregar um arquivo OBJ e inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
+int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materialFileName, string& materialName) {
+	std::vector<GLuint> indices;
+	std::vector<GLfloat> vbuffer;
+	int stride = 11;
+
+	if (!readOBJFile(filepath, indices, vbuffer, materialFileName, materialName)) {
+		std::cerr << "Erro ao ler o arquivo OBJ: " << filepath << std::endl;
 		return -1;
 	}
 
-	const GLubyte* renderer = glGetString(GL_RENDERER);
-	const GLubyte* version = glGetString(GL_VERSION);
-	cout << "Renderer: " << renderer << endl;
-	cout << "OpenGL version supported " << version << endl;
+	numVertices = vbuffer.size() / stride;
 
-	Shader shader("../shaders/sprite.vs", "../shaders/sprite.fs");
-	loadOBJ("../objects/cube.obj");
-	loadMTL("../objects/" + mtlFilePath);
-	GLuint textureID = loadTexture("../textures/" + textureFilePath);
-	GLuint VAO = setupSprite();
+	GLuint VBO, VAO;
+	if (!initializeBuffers(VBO, VAO, vbuffer, stride)) {
+		std::cerr << "Erro ao inicializar os buffers de vértices e arrays de vértices." << std::endl;
+		return -1;
+	}
 
+	return VAO;
+}
+
+// Carrega uma textura a partir de um arquivo, configura seus parâmetros e retorna o ID da textura
+int loadTexture(string filepath)
+{
+	GLuint texID;
+
+	// Gera o identificador da textura na memória 
+	glGenTextures(1, &texID);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	//Ajusta os parâmetros de wrapping e filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Carregamento da imagem
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		GLenum format;
+		switch (nrChannels) {
+		case 1:
+			format = GL_RED;
+			break;
+		case 3:
+			format = GL_RGB;
+			break;
+		case 4:
+			format = GL_RGBA;
+			break;
+		default:
+			std::cerr << "Número de canais não suportado: " << nrChannels << std::endl;
+			stbi_image_free(data);
+			return 0;
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Falha ao carregar a textura" << std::endl;
+		return 0;
+	}
+
+	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+}
+
+// Carrega um arquivo MTL simples, extrai o nome do arquivo de textura e o armazena na variável textureFileName
+string loadSimpleMTL(const std::string& filepath, string materialName)
+{
+	string textureFileName;
+	std::ifstream inputFile(filepath);
+
+	if (!inputFile.is_open()) {
+		std::cerr << "Erro ao abrir o arquivo MTL: " << filepath << std::endl;
+		return "";
+	}
+
+	string line;
+	bool materialFound = false;
+
+	while (getline(inputFile, line))
+	{
+		istringstream ssline(line);
+		string word;
+		ssline >> word;
+
+		if (word == "newmtl")
+		{
+			string currentMaterialName;
+			ssline >> currentMaterialName;
+			materialFound = (currentMaterialName == materialName);
+		}
+		else if (word == "map_Kd" && materialFound) {
+			ssline >> textureFileName;
+			break;
+		}
+	}
+
+	inputFile.close();
+	return textureFileName;
+}
+
+int main()
+{
+	// Inicialização da GLFW
+	glfwInit();
+
+	// Criação da janela GLFW
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Ola 3D -- Eduarda!", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
+
+	// Fazendo o registro da função de callback para a janela GLFW
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
+
+	// GLAD: carrega todos os ponteiros d funções da OpenGL
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Falha ao inicializar o GLAD" << std::endl;
+	}
+
+	// Obtendo as informações de versão
+	const GLubyte* renderer = glGetString(GL_RENDERER); /* get renderer string */
+	const GLubyte* version = glGetString(GL_VERSION); /* version as a string */
+	cout << "Renderizador: " << renderer << endl;
+	cout << "Versão OpenGL suportada" << version << endl;
+
+	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	glViewport(0, 0, width, height);
+
+	// Compilando e buildando o programa de shader
+	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
-	glUniform1i(glGetUniformLocation(shader.ID, "tex_buffer"), 0);
 
-	glm::mat4 projection = glm::mat4(1);
-	projection = glm::ortho(0.0, 800.0, 0.0, 600.0, -1000.0, 1000.0);
+	Camera camera(&shader, width, height);
+	gCamera = &camera;
 
-	GLint projLoc = glGetUniformLocation(shader.ID, "projection");
-	glUniformMatrix4fv(projLoc, 1, false, glm::value_ptr(projection));
+	// Iluminação: Coeficiente de material para a luz ambiente
+	shader.setFloat("ka", 0.2);
+	// Iluminação: Coeficiente de material para a luz difusa
+	shader.setFloat("kd", 0.5);
+	// Iluminação: Coeficiente de material para a luz especular
+	shader.setFloat("ks", 0.5);
+	// Iluminação: Expoente de brilho do material
+	shader.setFloat("q", 10.0);
+	// Iluminação: Define a posição da fonte de luz
+	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
+	// Iluminação: Define a cor da luz
+	shader.setVec3("light_color", 1.0, 1.0, 1.0);
 
+	glEnable(GL_DEPTH_TEST);
+
+	int numVertices;
+	string materialFileName;
+	string materialName;
+	//GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
+	GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
+
+	// Carregamento do arquivo MTL para obter as informações do material
+	string textureFileName = loadSimpleMTL(materialFileName, materialName);
+
+	//Carregando uma textura e armazenando o identificador na memória
+	GLuint textureId = loadTexture(textureFileName);
+
+	int numObjetcts = 7;
+	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
+
+	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
+		resetTranslationVariables();
+
+		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		glViewport(0, 0, width, height);
-
-		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		// Limpa o buffer de cor
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //cor de fundo
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLineWidth(10);
 		glPointSize(20);
 
-		glm::mat4 model = glm::mat4(1);
-		float angle = (GLfloat)glfwGetTime();
+		gCamera->updateCamera();
 
-		model = glm::translate(model, glm::vec3(400.0, 300.0, 100));
-		if (rotateX)
+		for (int i = 0; i < sceneObjects.size(); ++i)
 		{
-			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+			if (rotateX)
+				sceneObjects[i].rotateX();
+			else if (rotateY)
+				sceneObjects[i].rotateY();
+			else if (rotateZ)
+				sceneObjects[i].rotateZ();
+
+			if (translateX)
+				sceneObjects[i].translateX(translateDirection);
+			else if (translateY)
+				sceneObjects[i].translateY(translateDirection);
+			else if (translateZ)
+				sceneObjects[i].translateZ(translateDirection);
+
+			sceneObjects[i].updateScale(glm::vec3(scale, scale, scale));
+			sceneObjects[i].updateModelMatrix();
+			sceneObjects[i].renderObject();
 		}
-		else if (rotateY)
-		{
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-		}
-		else if (rotateZ)
-		{
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-		}
-		model = glm::scale(model, glm::vec3(scale, scale, scale));
 
-		model = glm::translate(model, glm::vec3(xTranslation, yTranslation, zTranslation));
-
-		GLint modelLoc = glGetUniformLocation(shader.ID, "model");
-		glUniformMatrix4fv(modelLoc, 1, false, glm::value_ptr(model));
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		glBindVertexArray(VAO);
-
-		glDrawArrays(GL_TRIANGLES, 0, (positions.size() / 3));
-
-		glBindVertexArray(0);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-
+		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
-
+	// Pede pra OpenGL desalocar os buffers
 	glDeleteVertexArrays(1, &VAO);
+	// Finaliza a execução da GLFW, limpando os recursos alocados por ela
 	glfwTerminate();
 	return 0;
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-{
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-
-	if (key == GLFW_KEY_X && action == GLFW_PRESS)
-	{
-		rotateX = true;
-		rotateY = false;
-		rotateZ = false;
-	}
-
-	if (key == GLFW_KEY_Y && action == GLFW_PRESS)
-	{
-		rotateX = false;
-		rotateY = true;
-		rotateZ = false;
-	}
-
-	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-	{
-		rotateX = false;
-		rotateY = false;
-		rotateZ = true;
-	}
-	if (key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS) {
-		scale -= 10;
-	}
-
-	if (key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS) {
-		scale += 10;
-	}
-
-	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		xTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		xTranslation += 0.1f;
-	}
-
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		zTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		zTranslation += 0.1f;
-	}
-
-	if (key == GLFW_KEY_J && action == GLFW_PRESS) {
-		yTranslation -= 0.1f;
-	}
-
-	if (key == GLFW_KEY_I && action == GLFW_PRESS) {
-		yTranslation += 0.1f;
-	}
-}
-
-void loadMTL(string path)
-{
-	string line, readValue;
-	ifstream mtlFile(path);
-
-	while (!mtlFile.eof())
-	{
-		getline(mtlFile, line);
-
-		istringstream iss(line);
-
-		if (line.find("map_Kd") == 0)
-		{
-			iss >> readValue >> textureFilePath;
-		}
-	}
-	mtlFile.close();
-}
-
-int setupSprite()
-{
-	GLuint VAO, VBO[2];
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(2, VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(GLfloat), positions.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(GLfloat), textureCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	glEnable(GL_DEPTH_TEST);
-
-	return VAO;
-}
-
-void loadOBJ(string path)
-{
-	vector<glm::vec3> vertexIndices;
-	vector<glm::vec2> textureIndices;
-
-	ifstream file(path);
-	if (!file.is_open())
-	{
-		cerr << "Failed to open file: " << path << endl;
-		return;
-	}
-
-	string line;
-	while (getline(file, line))
-	{
-		istringstream iss(line);
-		string prefix;
-		iss >> prefix;
-
-		if (prefix == "mtllib")
-		{
-			iss >> mtlFilePath;
-		}
-		else if (prefix == "v")
-		{
-			float x, y, z;
-			iss >> x >> y >> z;
-			vertexIndices.push_back(glm::vec3(x, y, z));
-		}
-		else if (prefix == "vt")
-		{
-			float u, v;
-			iss >> u >> v;
-			textureIndices.push_back(glm::vec2(u, v));
-		}
-		else if (prefix == "f")
-		{
-			string v1, v2, v3;
-			iss >> v1 >> v2 >> v3;
-
-			glm::ivec3 vIndices, tIndices;
-			istringstream(v1.substr(0, v1.find('/'))) >> vIndices.x;
-			istringstream(v1.substr(v1.find('/') + 1)) >> tIndices.x;
-			istringstream(v2.substr(0, v2.find('/'))) >> vIndices.y;
-			istringstream(v2.substr(v2.find('/') + 1)) >> tIndices.y;
-			istringstream(v3.substr(0, v3.find('/'))) >> vIndices.z;
-			istringstream(v3.substr(v3.find('/') + 1)) >> tIndices.z;
-
-			for (int i = 0; i < 3; i++)
-			{
-				const glm::vec3& vertex = vertexIndices[vIndices[i] - 1];
-				const glm::vec2& texture = textureIndices[tIndices[i] - 1];
-
-				positions.push_back(vertex.x);
-				positions.push_back(vertex.y);
-				positions.push_back(vertex.z);
-				textureCoords.push_back(texture.x);
-				textureCoords.push_back(texture.y);
-			}
-		}
-	}
-
-	file.close();
-}
-
-int loadTexture(string path)
-{
-	GLuint texID;
-
-	glGenTextures(1, &texID);
-	glBindTexture(GL_TEXTURE_2D, texID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-
-	if (data)
-	{
-		if (nrChannels == 3)
-		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		}
-		else
-		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		}
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		cout << "Failed to load texture" << endl;
-	}
-	stbi_image_free(data);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	return texID;
 }
