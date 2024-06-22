@@ -58,6 +58,11 @@ void adjustRotation(int key)
 		rotateY = false;
 		rotateZ = true;
 		break;
+	case(GLFW_KEY_Q):
+		rotateX = false;
+		rotateY = false;
+		rotateZ = false;
+		break;
 	default:
 		break;
 	}

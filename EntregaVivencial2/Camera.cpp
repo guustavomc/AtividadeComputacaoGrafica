@@ -62,6 +62,9 @@ public:
 		case(GLFW_KEY_D):
 			position += glm::normalize(glm::cross(frontDirection, upDirection)) * cameraSpeed;
 			break;
+		case(GLFW_KEY_C):
+			position = glm::vec3(0.0, 0.0, 5.0);;
+			break;
 		default:
 			break;
 		}
