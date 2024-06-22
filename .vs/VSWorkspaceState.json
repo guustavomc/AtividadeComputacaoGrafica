@@ -1,9 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\EntregaVivencial1\\HelloTextures",
-    "\\EntregaVivencial2"
+    "\\EntregaVivencial2",
+    "\\Modulo4",
+    "\\Modulo5"
   ],
-  "SelectedNode": "\\EntregaVivencial2\\Origem.cpp",
+  "SelectedNode": "\\Modulo4\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }

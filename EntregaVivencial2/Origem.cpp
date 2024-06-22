@@ -468,7 +468,7 @@ int main()
 	//Carregando uma textura e armazenando o identificador na memória
 	GLuint textureId = loadTexture(textureFileName);
 
-	int numObjetcts = 7;
+	int numObjetcts = 5;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
 
 	// Loop da aplicação
