@@ -1,10 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\EntregaVivencial2",
+    "\\EntregaVivencial1",
+    "\\EntregaVivencial1\\HelloTextures",
+    "\\Modulo1_Hello3D\\AtividadeModulo1",
+    "\\Modulo2",
+    "\\Modulo3",
+    "\\Modulo3\\HelloTextures",
     "\\Modulo4",
     "\\Modulo5"
   ],
-  "SelectedNode": "\\EntregaVivencial2\\Origem.cpp",
+  "SelectedNode": "\\Modulo2\\Origem.cpp",
   "PreviewInSolutionExplorer": false
 }
