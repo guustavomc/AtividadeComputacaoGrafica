@@ -89,12 +89,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../dependencies/glfw-3.3.4.bin.WIN32/include;../../dependencies/GLAD/include;../../dependencies/glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glfw-3.4.bin.WIN64\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\GLAD\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../dependencies/glfw-3.3.4.bin.WIN32/lib-vc2019</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <PerUserRedirection>true</PerUserRedirection>
     </Link>

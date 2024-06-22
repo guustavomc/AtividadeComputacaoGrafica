@@ -1,12 +1,14 @@
 {
   "ExpandedNodes": [
     "",
+    "\\EntregaVivencial1",
+    "\\EntregaVivencial1\\HelloTextures",
     "\\Modulo1_Hello3D",
     "\\Modulo1_Hello3D\\AtividadeModulo1",
-    "\\Modulo4",
-    "\\Modulo4\\HelloTextures",
-    "\\Modulo4\\textures"
+    "\\Modulo2\\AtividadeModulo2",
+    "\\Modulo3",
+    "\\Modulo3\\HelloTextures"
   ],
-  "SelectedNode": "\\Modulo1_Hello3D\\AtividadeModulo1\\Origem.cpp",
+  "SelectedNode": "\\EntregaVivencial1\\HelloTextures-Sprites.sln",
   "PreviewInSolutionExplorer": false
 }
