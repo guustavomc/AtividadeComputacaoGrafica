@@ -416,11 +416,11 @@ int main()
 	// Iluminação: Coeficiente de material para a luz difusa
 	shader.setFloat("kd", 0.5);
 	// Iluminação: Coeficiente de material para a luz especular
-	shader.setFloat("ks", 0.5);
+	shader.setFloat("ks", 0.7);
 	// Iluminação: Expoente de brilho do material
 	shader.setFloat("q", 10.0);
 	// Iluminação: Define a posição da fonte de luz
-	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
+	shader.setVec3("light_pos", 0.0, 3.0, 0.0);
 	// Iluminação: Define a cor da luz
 	shader.setVec3("light_color", 1.0, 1.0, 1.0);
 
@@ -429,13 +429,13 @@ int main()
 	int numVertices;
 	string materialFileName;
 	string materialName;
-	GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
+	GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
 
 	string textureFileName = loadSimpleMTL(materialFileName, materialName);
 
 	GLuint textureId = loadTexture(textureFileName);
 
-	int numObjetcts = 7;
+	int numObjetcts = 3;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
 
 	while (!glfwWindowShouldClose(window))
@@ -447,7 +447,7 @@ int main()
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glLineWidth(10);
+		glLineWidth(15);
 		glPointSize(20);
 
 		gCamera->updateCamera();

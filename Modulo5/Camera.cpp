@@ -7,7 +7,7 @@ class Camera
 {
 public:
 	Camera(Shader* shader, int width, int height, float fov = glm::radians(45.0f), float nearPlane = 0.1f,
-		float farPlane = 100.0f, float mouseSensitivity = 0.05, float pitch = 0.0, float yaw = -90.0, float cameraSpeed = 0.05,
+		float farPlane = 100.0f, float mouseSensitivity = 0.05, float pitch = 0.0, float yaw = -90.0, float cameraSpeed = 0.09,
 		float minFov = 0.5f, float maxFov = 10.0f, float scrollSpeed = 0.05f)
 		: shader(shader), width(width), height(height), fov(fov), nearPlane(nearPlane), farPlane(farPlane),
 		mouseSensitivity(mouseSensitivity), pitch(pitch), yaw(yaw), cameraSpeed(cameraSpeed), minFov(minFov), 
