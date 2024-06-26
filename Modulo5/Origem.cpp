@@ -431,7 +431,7 @@ int main()
 	string materialName;
 	GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
 
-	string textureFileName = loadSimpleMTL(materialFileName, materialName);
+	string textureFileName = loadSimpleMTL("../3D_models/Suzanne/",materialFileName, materialName);
 
 	GLuint textureId = loadTexture(textureFileName);
 
