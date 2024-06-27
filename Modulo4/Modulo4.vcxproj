@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{7d731b91-d499-42cf-9fc9-1205a933fdde}</ProjectGuid>
-    <RootNamespace>CGUnisinos</RootNamespace>
+    <RootNamespace>Modulo4</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
