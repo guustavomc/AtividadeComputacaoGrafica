@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GrauB", "GrauB.vcxproj", "{7D731B91-D499-42CF-9FC9-1205A933FDDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Debug|x64.ActiveCfg = Debug|x64
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Debug|x64.Build.0 = Debug|x64
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Debug|x86.ActiveCfg = Debug|Win32
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Debug|x86.Build.0 = Debug|Win32
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Release|x64.ActiveCfg = Release|x64
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Release|x64.Build.0 = Release|x64
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Release|x86.ActiveCfg = Release|Win32
+		{7D731B91-D499-42CF-9FC9-1205A933FDDE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2CD85BE-9E26-46A7-BD9F-B0347319532C}
+	EndGlobalSection
+EndGlobal
