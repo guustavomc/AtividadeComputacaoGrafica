@@ -132,7 +132,6 @@ void setSelectedObject(int id) {
 	resetTranslationVariables();
 	resetRotationVariables();
 	resetScaleVariable();
-	//resetPlayCurve();
 }
 
 void selectObjectByKey(int key) {
