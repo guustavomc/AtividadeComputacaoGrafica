@@ -19,8 +19,6 @@ using namespace std;
 #include "Camera.cpp"
 #include "Hermite.cpp"
 #include "Bezier.cpp"
-#include "CatmullRom.cpp"
-
 #include <random>
 
 // Dimensões da janela

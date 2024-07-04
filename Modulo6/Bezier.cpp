@@ -1,6 +1,8 @@
+#pragma once
 #include "Curve.cpp"
 
-class Bezier : public Curve
+class Bezier :
+	public Curve
 {
 public:
 	Bezier()
@@ -71,5 +73,5 @@ public:
 
 		// Desvincula o VAO (é uma boa prática desvincular qualquer buffer ou array para evitar bugs medonhos)
 		glBindVertexArray(0);
-	};
+	}
 };

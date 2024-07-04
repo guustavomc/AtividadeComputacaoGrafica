@@ -1,3 +1,4 @@
+#pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -10,16 +11,16 @@ public:
 		float farPlane = 100.0f, float mouseSensitivity = 0.05, float pitch = 0.0, float yaw = -90.0, float cameraSpeed = 0.09,
 		float minFov = 0.5f, float maxFov = 10.0f, float scrollSpeed = 0.05f)
 		: shader(shader), width(width), height(height), fov(fov), nearPlane(nearPlane), farPlane(farPlane),
-		mouseSensitivity(mouseSensitivity), pitch(pitch), yaw(yaw), cameraSpeed(cameraSpeed), minFov(minFov), 
+		mouseSensitivity(mouseSensitivity), pitch(pitch), yaw(yaw), cameraSpeed(cameraSpeed), minFov(minFov),
 		maxFov(maxFov), scrollSpeed(scrollSpeed)
 	{
 		this->lastMouseX = width / 2.0;
 		this->lastMouseY = height / 2.0;
 		this->aspectRatio = (float)width / (float)height;
-		setProjection();
+		updateProjection();
 	}
 
-	void setProjection()
+	void updateProjection()
 	{
 		glm::mat4 projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
 		shader->setMat4("projection", glm::value_ptr(projection));
@@ -41,10 +42,22 @@ public:
 		updateCameraPosition();
 	}
 
+	void setPosition(glm::vec3 position = glm::vec3(0.0, 0.0, 5.0)) {
+		this->position = position;
+	}
+
+	void setFrontDirection(glm::vec3 frontDirection = glm::vec3(0.0, 0.0, -1.0)) {
+		this->frontDirection = frontDirection;
+	}
+
+	void setUpDirection(glm::vec3 upDirection = glm::vec3(0.0, 1.0, 0.0)) {
+		this->upDirection = upDirection;
+	}
+
 	void scrollCamera(double yOffset) {
 		fov -= (yOffset * scrollSpeed);
 		fov = glm::clamp(fov, minFov, maxFov);
-		setProjection();
+		updateProjection();
 	}
 
 	void moveCamera(int key) {
