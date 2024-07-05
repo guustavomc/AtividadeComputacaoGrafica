@@ -1,5 +1,4 @@
 #pragma once
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,11 +10,12 @@ using namespace std;
 class Curve
 {
 public:
-	inline void setControlPoints(vector <glm::vec3> controlPoints)
-	{ 
-		this->controlPoints = controlPoints; 
+	Curve() {}
+
+	inline void setControlPoints(vector <glm::vec3> controlPoints) {
+		this->controlPoints = controlPoints;
 	}
-	
+
 	void setShader(Shader* shader)
 	{
 		this->shader = shader;
@@ -37,14 +37,12 @@ public:
 
 	}
 
-	int getNbCurvePoints() 
-	{ 
-		return curvePoints.size(); 
+	int getNbCurvePoints() {
+		return curvePoints.size();
 	}
 
-	glm::vec3 getPointOnCurve(int i) 
-	{ 
-		return curvePoints[i]; 
+	glm::vec3 getPointOnCurve(int i) {
+		return curvePoints[i];
 	}
 
 protected:

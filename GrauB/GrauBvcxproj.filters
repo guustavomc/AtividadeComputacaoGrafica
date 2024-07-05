@@ -39,9 +39,6 @@
     <ClCompile Include="Bezier.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="CatmullRom.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\dependencies\GLAD\include\glad\glad.h">
