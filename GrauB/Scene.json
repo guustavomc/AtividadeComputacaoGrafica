@@ -24,15 +24,57 @@
   "objects": [
     {
       "objectId": 1,
-      "objFilePath": "Planets/Terra.obj",
-      "positionX": 3.0,
+      "objFilePath": "Mercurio.obj",
+      "positionX": -7.0,
       "positionY": 0.0,
       "positionZ": 0.0
     },
     {
       "objectId": 2,
-      "objFilePath": "Planets/Mercurio.obj",
+      "objFilePath": "Venus.obj",
+      "positionX": -5.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 3,
+      "objFilePath": "Terra.obj",
       "positionX": -3.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 4,
+      "objFilePath": "Marte.obj",
+      "positionX": -1.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 5,
+      "objFilePath": "Jupiter.obj",
+      "positionX": 1.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 6,
+      "objFilePath": "Saturno.obj",
+      "positionX": 3.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 7,
+      "objFilePath": "Urano.obj",
+      "positionX": 5.0,
+      "positionY": 0.0,
+      "positionZ": 0.0
+    },
+    {
+      "objectId": 8,
+      "objFilePath": "Netuno.obj",
+      "positionX": 7.0,
       "positionY": 0.0,
       "positionZ": 0.0
     }
