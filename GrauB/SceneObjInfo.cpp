@@ -30,6 +30,7 @@ public:
 private:
 	string objFilePath, materialFileName, materialName, textureFileName;
 
+	// Função para ler o arquivo OBJ e extrair os dados de vértices e índices
 	bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
 		string& materialFileName, string& materialName) {
 
@@ -118,6 +119,7 @@ private:
 		return true;
 	}
 
+	// Função para inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
 	bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbuffer, int stride) {
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -144,6 +146,7 @@ private:
 		return true;
 	}
 
+	// Função principal para carregar um arquivo OBJ e inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
 	int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materialFileName, string& materialName) {
 		std::vector<GLuint> indices;
 		std::vector<GLfloat> vbuffer;
@@ -165,6 +168,7 @@ private:
 		return VAO;
 	}
 
+	// Função principal para carregar um arquivo MTL
 	string loadSimpleMTL(const std::string& filepath, string materialName)
 	{
 		string textureFileName;
@@ -220,14 +224,17 @@ private:
 	{
 		GLuint texID;
 
+		// Gera o identificador da textura na memória 
 		glGenTextures(1, &texID);
 		glBindTexture(GL_TEXTURE_2D, texID);
 
+		//Ajusta os parâmetros de wrapping e filtering
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		//Carregamento da imagem
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
 
