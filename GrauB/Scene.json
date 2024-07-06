@@ -21,6 +21,7 @@
     "lightColorG": 1.0,
     "lightColorB": 1.0
   },
+
   "objects": [
     {
       "objFilePath": "Sol.obj",
@@ -71,7 +72,7 @@
     },
     {
       "objFilePath": "Jupiter.obj",
-      "positionX": 15.0,
+      "positionX": 11.0,
       "positionY": 0.0,
       "positionZ": 0.0,
       "scale": 4,

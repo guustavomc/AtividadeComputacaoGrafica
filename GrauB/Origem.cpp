@@ -51,31 +51,6 @@ void adjustScale(int key)
 		scale -= scaleFactor;
 }
 
-void adjustRotation(int key)
-{
-	if (selectedObject != nullptr) {
-		switch (key)
-		{
-		case(GLFW_KEY_X):
-			selectedObject->rotate = "x";
-			break;
-		case(GLFW_KEY_Y):
-			selectedObject->rotate = "y";
-			break;
-		case(GLFW_KEY_Z):
-			selectedObject->rotate = "z";
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-void adjustPlayCurve(int key) {
-	if (key == GLFW_KEY_P && selectedObject != nullptr)
-		selectedObject->playCurve = !selectedObject->playCurve;
-}
-
 void adjustTranslation(int key)
 {
 	switch (key)
@@ -121,39 +96,8 @@ void adjustTranslation(int key)
 	}
 }
 
-void setSelectedObject(int id) {
-	if(selectedObject != nullptr)
-		selectedObject->rotate = "";
 
-	if (id < 0)
-		selectedObject = nullptr;
-	else {
-		for (int i = 0; i < gScene->sceneObject.size(); ++i)
-			if (gScene->sceneObject[i].transfObjectId == id) {
-				selectedObject = &gScene->sceneObject[i];
-				break;
-			}
-	}
-	resetTranslationVariables();
-	resetScaleVariable();
-}
 
-void selectObjectByKey(int key) {
-	switch (key) {
-	case GLFW_KEY_KP_0: case GLFW_KEY_0: setSelectedObject(0); break;
-	case GLFW_KEY_KP_1: case GLFW_KEY_1: setSelectedObject(1); break;
-	case GLFW_KEY_KP_2: case GLFW_KEY_2: setSelectedObject(2); break;
-	case GLFW_KEY_KP_3: case GLFW_KEY_3: setSelectedObject(3); break;
-	case GLFW_KEY_KP_4: case GLFW_KEY_4: setSelectedObject(4); break;
-	case GLFW_KEY_KP_5: case GLFW_KEY_5: setSelectedObject(5); break;
-	case GLFW_KEY_KP_6: case GLFW_KEY_6: setSelectedObject(6); break;
-	case GLFW_KEY_KP_7: case GLFW_KEY_7: setSelectedObject(7); break;
-	case GLFW_KEY_KP_8: case GLFW_KEY_8: setSelectedObject(8); break;
-	case GLFW_KEY_KP_9: case GLFW_KEY_9: setSelectedObject(9); break;
-	case GLFW_KEY_KP_ENTER: case GLFW_KEY_ENTER: setSelectedObject(-1); break;
-	default: break;
-	}
-}
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -162,9 +106,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 
 	if (action == GLFW_PRESS) {
 		adjustScale(key);
-		adjustRotation(key);
-		adjustPlayCurve(key);
-		selectObjectByKey(key);
 	}
 
 	adjustTranslation(key);
