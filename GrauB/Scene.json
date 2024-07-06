@@ -24,13 +24,12 @@
 
   "objects": [
     {
+      "transfObjectId": 1,
       "objFilePath": "Sol.obj",
-      "positionX": -50.0,
-      "positionY": 0.0,
-      "positionZ": 0.0,
-      "scale": 30,
-      "rotate": "y",
-      "rotateSpeed": 2
+      "positionX": -50,
+      "positionY": 0,
+      "positionZ": 0,
+      "scale": 30
 
     },
     {
