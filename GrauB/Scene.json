@@ -33,6 +33,7 @@
 
     },
     {
+      "transfObjectId": 2,
       "objFilePath": "Mercurio.obj",
       "positionX": -14.0,
       "positionY": 0.0,
@@ -43,6 +44,7 @@
 
     },
     {
+      "transfObjectId": 3,
       "objFilePath": "Venus.obj",
       "positionX": -10.0,
       "positionY": 0.0,
@@ -52,6 +54,7 @@
       "rotateSpeed": 100
     },
     {
+      "transfObjectId": 4,
       "objFilePath": "Terra.obj",
       "positionX": -1.0,
       "positionY": 0.0,
@@ -61,6 +64,7 @@
       "rotateSpeed": 100
     },
     {
+      "transfObjectId": 5,
       "objFilePath": "Marte.obj",
       "positionX": 5.0,
       "positionY": 0.0,
@@ -70,6 +74,7 @@
       "rotateSpeed": 100
     },
     {
+      "transfObjectId": 6,
       "objFilePath": "Jupiter.obj",
       "positionX": 11.0,
       "positionY": 0.0,
@@ -79,6 +84,7 @@
       "rotateSpeed": 50
     },
     {
+      "transfObjectId": 7,
       "objFilePath": "Saturno.obj",
       "positionX": 20.0,
       "positionY": 0.0,
@@ -88,6 +94,7 @@
       "rotateSpeed": 60
     },
     {
+      "transfObjectId": 8,
       "objFilePath": "Urano.obj",
       "positionX": 25.0,
       "positionY": 0.0,
@@ -97,6 +104,7 @@
       "rotateSpeed": 100
     },
     {
+      "transfObjectId": 9,
       "objFilePath": "Netuno.obj",
       "positionX": 27.0,
       "positionY": 0.0,
