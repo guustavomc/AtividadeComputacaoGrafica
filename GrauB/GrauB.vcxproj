@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{7d731b91-d499-42cf-9fc9-1205a933fdde}</ProjectGuid>
-    <RootNamespace>CGUnisinos</RootNamespace>
+    <RootNamespace>GrauB</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\dependencies\glfw-3.4.bin.WIN64\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\dependencies\GLAD\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glm;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\json-develop\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glfw-3.4.bin.WIN64\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\GLAD\include;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\glm;D:\Ciencia da computação\Hibrido - Ordem primeiro semestre do período letivo\7º Semestre\Computação Gráfica\AtividadeComputacaoGrafica\dependencies\json-develop\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

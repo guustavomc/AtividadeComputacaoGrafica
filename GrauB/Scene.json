@@ -23,60 +23,77 @@
   },
   "objects": [
     {
-      "objectId": 1,
       "objFilePath": "Mercurio.obj",
       "positionX": -14.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
+
     },
     {
-      "objectId": 2,
       "objFilePath": "Venus.obj",
       "positionX": -10.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 3,
       "objFilePath": "Terra.obj",
       "positionX": -6.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 4,
       "objFilePath": "Marte.obj",
       "positionX": -2.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 5,
       "objFilePath": "Jupiter.obj",
       "positionX": 2.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 6,
       "objFilePath": "Saturno.obj",
       "positionX": 6.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 7,
       "objFilePath": "Urano.obj",
       "positionX": 10.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     },
     {
-      "objectId": 8,
       "objFilePath": "Netuno.obj",
       "positionX": 14.0,
       "positionY": 0.0,
-      "positionZ": 0.0
+      "positionZ": 0.0,
+      "scale": 1,
+      "rotate": "y",
+      "rotateSpeed": 100
     }
   ]
 }

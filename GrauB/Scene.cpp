@@ -18,15 +18,16 @@ using namespace std;
 using json = nlohmann::json;
 
 struct SceneObjAux {
-	int objectId;
-	float x, y, z;
-	string objFilePath;
+	int transfObjectId = -1;
+	float x, y, z, scale, rotateSpeed = 10.0;
+	bool curveEnable = false;
+	string objFilePath, rotate;
 	vector <glm::vec3> curvePoints;
 };
 
 struct SceneCameraAux {
-	float fov, nearPlane, farPlane, positionX, positionY, positionZ,
-		frontDirectionX, frontDirectionY, frontDirectionZ,
+	float fov, nearPlane, farPlane, positionX, positionY, positionZ, 
+		frontDirectionX, frontDirectionY, frontDirectionZ, 
 		upDirectionX, upDirectionY, upDirectionZ;
 };
 
@@ -40,10 +41,10 @@ public:
 
 	Scene(string jsonFilePath, Shader* shader, int width, int height)
 		: jsonFilePath(jsonFilePath), shader(shader), width(width), height(height), camera(shader, width, height)
-	{
+    {
 		loadSceneFromJSON(jsonFilePath);
 		loadObjects();
-	}
+    }
 
 private:
 	Shader* shader;
@@ -63,7 +64,6 @@ private:
 		if (j.contains("objects")) {
 			for (const auto& obj : j["objects"]) {
 				SceneObjAux objAux;
-				objAux.objectId = obj["objectId"];
 				objAux.objFilePath = obj["objFilePath"];
 				objAux.x = obj["positionX"];
 				objAux.y = obj["positionY"];
@@ -76,7 +76,16 @@ private:
 						objAux.curvePoints.push_back(glm::vec3(x, y, z));
 					}
 				}
-
+				if (obj.contains("transfObjectId"))
+					objAux.transfObjectId = obj["transfObjectId"];
+				if(obj.contains("curveEnable"))
+						objAux.curveEnable = obj["curveEnable"];
+				if (obj.contains("scale"))
+					objAux.scale = obj["scale"];
+				if (obj.contains("rotate"))
+					objAux.rotate = obj["rotate"];
+				if (obj.contains("rotateSpeed"))
+					objAux.rotateSpeed = obj["rotateSpeed"];
 				sceneObjectsAux.push_back(objAux);
 			}
 		}
@@ -85,7 +94,7 @@ private:
 		}
 
 		loadLightFromJSON(j);
-		loadCameraFromJSON(j);
+		loadCameraFromJSON(j);	
 	}
 
 	void loadLightFromJSON(json j) {
@@ -157,7 +166,9 @@ private:
 	void loadObjects() {
 		for (const auto& obj : sceneObjectsAux)
 		{
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId, obj.curvePoints);
+			float scaleObj = obj.scale > 0 ? obj.scale : 1.0;
+			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.transfObjectId, obj.curvePoints, obj.curveEnable,
+				glm::vec3(scaleObj, scaleObj, scaleObj), obj.rotate, obj.rotateSpeed);
 			sceneObject.push_back(sceneObj);
 		}
 	}

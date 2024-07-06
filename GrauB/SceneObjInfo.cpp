@@ -100,7 +100,7 @@ private:
 					tokens[i] = tokens[i].substr(pos + 1);
 					pos = tokens[i].find("/");
 					token = tokens[i].substr(0, pos);
-					index = atoi(token.c_str()) - 1;
+					index = atoi(token.c_str()) - 1; 
 
 					vbuffer.push_back(textureCoordinates[index].s);
 					vbuffer.push_back(textureCoordinates[index].t);

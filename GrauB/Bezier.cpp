@@ -2,7 +2,7 @@
 #include "Curve.cpp"
 
 class Bezier :
-	public Curve
+    public Curve
 {
 public:
 	Bezier()
@@ -14,7 +14,7 @@ public:
 		);
 	}
 
-	void generateCurve(int pointsPerSegment)
+    void generateCurve(int pointsPerSegment)
 	{
 		float step = 1.0 / (float)pointsPerSegment;
 
