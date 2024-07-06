@@ -20,19 +20,33 @@ using namespace std;
 #include "SceneObj.cpp"
 #include "Bezier.cpp"
 
+// Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
+
+// Variáveis de controle de rotação
 bool rotateX = false, rotateY = false, rotateZ = false;
+
+// Variáveis de controle de translação
 bool translateX = false, translateY = false, translateZ = false;
 int translateDirection = 0;
+
+// Variável de controle de escala
 float scale = 0.0;
 
 Camera* gCamera = nullptr;
+
+// ID do objeto selecionado
 int selectedObjectId = -1;
 
+//// Controle da curva
+//bool playCurve = true;
+
+// Reseta variáveis de controle de escala
 void resetScaleVariable() {
 	scale = 0.0;
 }
 
+// Reseta variáveis de controle de translação
 void resetTranslationVariables() {
 	translateX = false;
 	translateY = false;
@@ -40,13 +54,18 @@ void resetTranslationVariables() {
 	translateDirection = 0;
 }
 
+// Reseta variáveis de controle de rotação
 void resetRotationVariables() {
 	rotateX = false;
 	rotateY = false;
 	rotateZ = false;
 }
 
+//void resetPlayCurve() {
+//	playCurve = true;
+//}
 
+// Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
 {
 	float scaleFactor = 0.05;
@@ -57,6 +76,7 @@ void adjustScale(int key)
 		scale -= scaleFactor;
 }
 
+// Ajusta a rotação com base na tecla pressionada.
 void adjustRotation(int key)
 {
 	switch (key)
@@ -82,6 +102,12 @@ void adjustRotation(int key)
 
 }
 
+//void adjustPlayCurve(int key) {
+//	if (key == GLFW_KEY_P)
+//		playCurve = !playCurve;
+//}
+
+// Ajusta a translação com base na tecla pressionada.
 void adjustTranslation(int key)
 {
 	switch (key)
@@ -132,6 +158,7 @@ void setSelectedObject(int id) {
 	resetTranslationVariables();
 	resetRotationVariables();
 	resetScaleVariable();
+	//resetPlayCurve();
 }
 
 void selectObjectByKey(int key) {
@@ -151,6 +178,7 @@ void selectObjectByKey(int key) {
 	}
 }
 
+// Função callback acionada quando há interação com o teclado
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -182,50 +210,62 @@ void scrollCallback(GLFWwindow* window, double xpos, double ypos)
 
 int main()
 {
+	// Inicialização da GLFW
 	glfwInit();
 
+	// Criação da janela GLFW
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Modulo 6", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
+	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 
+	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Falha ao inicializar o GLAD" << std::endl;
 	}
 
+	// Obtendo as informações de versão
 	const GLubyte* renderer = glGetString(GL_RENDERER); /* get renderer string */
 	const GLubyte* version = glGetString(GL_VERSION); /* version as a string */
 	cout << "Renderizador: " << renderer << endl;
 	cout << "Versão OpenGL suportada" << version << endl;
 
+	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
+	// Compilando e buildando o programa de shader
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
 	Scene scene = Scene("Scene.json", &shader, width, height);
 	gCamera = &scene.camera;
 
+	// Iluminação: Define a posição da fonte de luz
 	shader.setVec3("light_pos", scene.lightPositionX, scene.lightPositionY, scene.lightPositionZ);
+	// Iluminação: Define a cor da luz
 	shader.setVec3("light_color", scene.lightColorR, scene.lightColorG, scene.lightColorB);
 
 
 	glEnable(GL_DEPTH_TEST);
 
 
+	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
 		resetTranslationVariables();
 
+		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
 		glfwPollEvents();
 
-		glClearColor(0.188f, 0.666f, 0.9333f, 1.0f); //cor de fundo
+		// Limpa o buffer de cor
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //cor de fundo
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLineWidth(10);
@@ -278,12 +318,15 @@ int main()
 
 		resetScaleVariable();
 
+		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
+	// Pede pra OpenGL desalocar os buffers
 	for (int i = 0; i < scene.sceneObject.size(); ++i) {
 		glDeleteVertexArrays(1, &scene.sceneObject[i].sceneObjInfo.VAO);
 	}
 
+	// Finaliza a execução da GLFW, limpando os recursos alocados por ela
 	glfwTerminate();
 	return 0;
 }
